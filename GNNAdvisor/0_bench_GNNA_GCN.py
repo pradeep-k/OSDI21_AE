@@ -4,10 +4,10 @@ os.environ["PYTHONWARNINGS"] = "ignore"
 
 
 run_GCN = True              # whether to run GCN model. 
-enable_rabbit = True        # whether to enable rabbit reordering in auto and manual mode.
+enable_rabbit = False        # whether to enable rabbit reordering in auto and manual mode.
 manual_mode = False         # whether to use the manually configure the setting.
 verbose_mode = False         # whether to printout more information such as the layerwise parameter.
-loadFromTxt = False         # whether to load data from a plain txt file.
+loadFromTxt = True        # whether to load data from a plain txt file.
 
 if run_GCN:
     model = 'gcn'
@@ -21,23 +21,25 @@ else:
 partsize_li = [32]          # only effective in manual model
 
 dataset = [
-        ('citeseer'	        , 3703	    , 6   ),  
-        ('cora' 	        , 1433	    , 7   ),  
-        ('pubmed'	        , 500	    , 3   ),      
-        ('ppi'	            , 50	    , 121 ),   
+        #('citeseer'	        , 3703	    , 6   ),  
+        #('cora' 	        , 1433	    , 7   ),  
+        #('pubmed'	        , 500	    , 3   ),  
+        #('ogb-arx'	        , 128	    , 40   ),   
+        ('reddit'	        , 602	    , 41 ), 
+        #('ogb-product'	        , 100	    , 47 ),   
 
-        ('PROTEINS_full'             , 29       , 2) ,   
-        ('OVCAR-8H'                  , 66       , 2) , 
-        ('Yeast'                     , 74       , 2) ,
-        ('DD'                        , 89       , 2) ,
-        ('TWITTER-Real-Graph-Partial', 1323     , 2) ,   
-        ('SW-620H'                   , 66       , 2) ,
+        #('PROTEINS_full'             , 29       , 2) ,   
+        #('OVCAR-8H'                  , 66       , 2) , 
+        #('Yeast'                     , 74       , 2) ,
+        #('DD'                        , 89       , 2) ,
+        #('TWITTER-Real-Graph-Partial', 1323     , 2) ,   
+        #('SW-620H'                   , 66       , 2) ,
         
-        ( 'amazon0505'               , 96	, 22),
-        ( 'artist'                   , 100  , 12),
-        ( 'com-amazon'               , 96	, 22),
-        ( 'soc-BlogCatalog'	       	 , 128  , 39), 
-        ( 'amazon0601'  	         , 96	, 22), 
+        #( 'amazon0505'               , 96	, 22),
+        #( 'artist'                   , 100  , 12),
+        #( 'com-amazon'               , 96	, 22),
+        #( 'soc-BlogCatalog'	       	 , 128  , 39), 
+        #( 'amazon0601'  	         , 96	, 22), 
 ]
 
 

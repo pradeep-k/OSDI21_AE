@@ -2,11 +2,11 @@
 import torch
 import numpy as np
 import time
-import dgl 
+#import dgl 
 import os.path as osp
 
 from scipy.sparse import *
-import rabbit
+#import rabbit
 
 def func(x):
     '''
@@ -53,6 +53,7 @@ class custom_dataset(torch.nn.Module):
         self.test_mask = torch.BoolTensor(self.test_mask).cuda()
 
     def init_edges(self, path):
+        """
         self.g = dgl.DGLGraph()
 
         # loading from a txt graph file
@@ -71,6 +72,7 @@ class custom_dataset(torch.nn.Module):
             
             # self.g.add_edges(src_li, dst_li)
             self.num_edges = len(src_li)
+            print("load from txt num edges", len(src_li))
             self.num_nodes = max(self.nodes) + 1
             self.edge_index = np.stack([src_li, dst_li])
 
@@ -91,18 +93,20 @@ class custom_dataset(torch.nn.Module):
             self.num_nodes = graph_obj['num_nodes']
             # self.g.add_edges(src_li, dst_li)
             self.num_edges = len(src_li)
+            print("load of npz num of edges:", len(src_li))
             self.edge_index = np.stack([src_li, dst_li])
             dur = time.perf_counter() - start
             if self.verbose_flag:
                 print("# Loading (npz)(s): {:.3f}".format(dur))
         
         self.avg_degree = self.num_edges / self.num_nodes
-        self.avg_edgeSpan = np.mean(np.abs(np.subtract(src_li, dst_li)))
+        #self.avg_edgeSpan = np.mean(np.abs(np.subtract(src_li, dst_li)))
 
         if self.verbose_flag:
             print('# nodes: {}'.format(self.num_nodes))
             print("# avg_degree: {:.2f}".format(self.avg_degree))
             print("# avg_edgeSpan: {}".format(int(self.avg_edgeSpan)))
+        
 
         # Build graph CSR.
         self.val = [1] * self.num_edges
@@ -113,10 +117,27 @@ class custom_dataset(torch.nn.Module):
 
         if self.verbose_flag:
             print("# Build CSR after reordering (s): {:.3f}".format(build_csr))
+        """
 
-        self.column_index = torch.IntTensor(scipy_csr.indices)
-        self.row_pointers = torch.IntTensor(scipy_csr.indptr)
+        ############################# add load graph #############################
+        offset_file = path + '../saved_graph/_csr_noeid.offset'
+        nebrs_file = path + "../saved_graph/_csr_noeid.nebrs"
+        offset = np.fromfile(offset_file, dtype='int32')
+        nebrs  = np.fromfile(nebrs_file, dtype='int32')
+        rowptr = torch.IntTensor(offset)
+        colind = torch.IntTensor(nebrs)
+        self.column_index = colind
+        self.row_pointers = rowptr
+        self.num_edges = colind.shape[0]
+        self.num_nodes = rowptr.shape[0] - 1
+        self.avg_degree = self.num_edges / self.num_nodes
 
+        ############################# end here ###################################
+
+        #self.column_index = torch.IntTensor(scipy_csr.indices)
+        #self.row_pointers = torch.IntTensor(scipy_csr.indptr)
+        print("col_index", len(self.column_index))
+        print("row_point",len(self.row_pointers))
         # Get degrees array.
         degrees = (self.row_pointers[1:] - self.row_pointers[:-1]).tolist()
         self.degrees = torch.sqrt(torch.FloatTensor(list(map(func, degrees)))).cuda()
